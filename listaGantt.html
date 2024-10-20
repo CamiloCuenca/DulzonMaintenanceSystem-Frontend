@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,64 +14,92 @@
     </header>
 
     <div class="content">
-        <h2>Lista de Gantt</h2>
-        <table class="table table-bordered">
+        <h2>Lista de Cartas Gantt</h2>
+        <table class="table table-dark">
             <thead>
                 <tr>
-                    <th>ID Carta Gantt</th>
+                    <th>ID</th>
                     <th>Nombre</th>
                     <th>Fecha de Creación</th>
-                    <th>Acciones</th> <!-- Nueva columna para acciones -->
+                    <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="mantenimientosTableBody">
-                <!-- Los datos de los mantenimientos se agregarán aquí dinámicamente -->
+            <tbody id="cartasGanttTable">
+                <!-- Aquí se llenará la tabla con JavaScript -->
             </tbody>
         </table>
+        <a href="cartaGantt.html" class="btn btn-success">Crear Nueva Carta Gantt</a>
     </div>
 
     <script>
-        async function obtenerMantenimientos() {
-            try {
-                const response = await fetch('http://localhost:8080/api/sinAuth/obtener-lista-gantt');
-                if (!response.ok) {
-                    throw new Error('Error al obtener los mantenimientos');
-                }
-                const mantenimientos = await response.json();
-                const tableBody = document.getElementById('mantenimientosTableBody');
-                tableBody.innerHTML = ''; // Limpiar la tabla antes de agregar datos
+        async function cargarCartasGantt() {
+            const token = localStorage.getItem('authToken');
 
-                mantenimientos.forEach(mantenimiento => {
+            try {
+                const response = await fetch('http://localhost:8080/api/sinAuth/obtener-lista-gantt', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al obtener las cartas Gantt');
+                }
+                const cartasGantt = await response.json();
+                const tableBody = document.getElementById('cartasGanttTable');
+
+                cartasGantt.forEach(carta => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${mantenimiento.idCartaGantt}</td>
-                        <td>${mantenimiento.nombreCartaGantt}</td>
-                        <td>${new Date(mantenimiento.fechaCreacion).toLocaleString()}</td>
+                        <td>${carta.idCartaGantt}</td>
+                        <td>${carta.nombreCartaGantt}</td>
+                        <td>${new Date(carta.fechaCreacion).toLocaleString()}</td>
                         <td>
-                            <button class="btn btn-warning" onclick="editarMantenimiento('${mantenimiento.idCartaGantt}')">Editar</button>
-                            <button class="btn btn-danger" onclick="eliminarMantenimiento('${mantenimiento.idCartaGantt}')">Eliminar</button>
+                            <a href="editarCartaGantt.html?id=${carta.idCartaGantt}" class="btn btn-warning" onclick="guardarIdCarta('${carta.idCartaGantt}')">Editar</a>
+                            <button class="btn btn-danger" onclick="eliminarCartaGantt('${carta.idCartaGantt}')">Eliminar</button>
                         </td>
                     `;
                     tableBody.appendChild(row);
                 });
             } catch (error) {
                 console.error(error);
-                alert('No se pudieron cargar los mantenimientos.');
+                alert('No se pudieron cargar las cartas Gantt.');
             }
         }
 
-        function editarMantenimiento(idCartaGantt) {
-            // Redirigir a la página de edición
-            window.location.href = `editarCartaGantt.html?id=${idCartaGantt}`;
+        async function eliminarCartaGantt(idCartaGantt) {
+            const token = localStorage.getItem('authToken');
+
+            if (confirm('¿Estás seguro de que deseas eliminar esta carta Gantt?')) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/operador/eliminar-carta-gantt/${idCartaGantt}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error al eliminar la carta Gantt');
+                    }
+
+                    alert('Carta Gantt eliminada con éxito.');
+                    location.reload(); // Recargar la página para actualizar la lista
+                } catch (error) {
+                    console.error(error);
+                    alert('No se pudo eliminar la carta Gantt.');
+                }
+            }
         }
 
-        async function eliminarMantenimiento(idCartaGantt) {
-            // Lógica para eliminar el mantenimiento
-            alert(`Eliminar mantenimiento con ID: ${idCartaGantt}`);
-            // Implementar el fetch para eliminar cuando estés listo
+        function guardarIdCarta(idCartaGantt) {
+            localStorage.setItem('idCartaGantt', idCartaGantt);
         }
 
-        document.addEventListener('DOMContentLoaded', obtenerMantenimientos);
+        document.addEventListener('DOMContentLoaded', cargarCartasGantt);
     </script>
 
     <style>
@@ -79,56 +107,23 @@
             background-color: #1b1b1b;
             font-family: Arial, sans-serif;
             margin: 0;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 98vh;
+            padding: 20px;
+            color: white;
         }
 
         header {
-            position: absolute;
-            top: 0;
-            width: 97%;
             background-color: #2a5246;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 129px;
             color: white;
         }
 
         .content {
             padding: 20px;
             color: #128055;
-        }
-
-        table {
-            margin-top: 20px;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            text-align: center;
-            padding: 10px;
-            border: 1px solid #2a5246;
-            color: white;
-        }
-
-        th {
-            background-color: #128055;
-        }
-
-        tr:nth-child(even) {
-            background-color: #2a5246;
-        }
-
-        tr:nth-child(odd) {
-            background-color: #1b1b1b;
         }
 
         .dulzon {

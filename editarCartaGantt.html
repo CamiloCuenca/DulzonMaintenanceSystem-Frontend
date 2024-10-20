@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,102 +15,44 @@
 
     <div class="content">
         <h2>Editar Carta Gantt</h2>
-        <form id="editarGanttForm">
-            <input type="hidden" id="idCartaGantt" name="idCartaGantt">
+        <form id="editarCartaGanttForm">
             <div class="form-group">
-                <label for="nombreCartaGantt">Nombre de la Carta Gantt</label>
-                <input type="text" class="form-control" id="nombreCartaGantt" name="nombreCartaGantt" required>
-            </div>
-            <div class="form-group">
-                <label for="fechaCreacion">Fecha de Creación</label>
-                <input type="datetime-local" class="form-control" id="fechaCreacion" name="fechaCreacion" required>
-            </div>
-            <div class="form-group">
-                <label for="actividadesPlanificadas">Actividades Planificadas (JSON)</label>
-                <textarea class="form-control" id="actividadesPlanificadas" name="actividadesPlanificadas" rows="5" required></textarea>
-                <small class="form-text text-muted">Proporcione un array JSON de actividades.</small>
-            </div>
-            <div class="form-group">
-                <label for="cuadrillas">Cuadrillas (JSON)</label>
-                <textarea class="form-control" id="cuadrillas" name="cuadrillas" rows="5" required></textarea>
-                <small class="form-text text-muted">Proporcione un array JSON de cuadrillas.</small>
+                <label for="nombreCartaGantt">Nombre</label>
+                <input type="text" class="form-control" id="nombreCartaGantt" required>
             </div>
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a href="index.html" class="btn btn-secondary">Volver</a>
+            <a href="listaGantt.html" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 
     <script>
-        // Función para cargar los datos de la carta Gantt a editar
-        async function cargarDatosCartaGantt() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const idCartaGantt = urlParams.get('id');
-            if (!idCartaGantt) {
-                alert('No se ha proporcionado un ID de carta Gantt.');
-                window.location.href = 'index.html'; // Redirigir si no hay ID
-                return;
-            }
+        async function cargarCartaGantt() {
+            const params = new URLSearchParams(window.location.search);
+            const idCartaGantt = params.get('id');
+            const token = localStorage.getItem('authToken');
 
             try {
-                const response = await fetch(`http://localhost:8080/api/sinAuth/obtener-gantt/${idCartaGantt}`);
-                if (!response.ok) {
-                    throw new Error('Error al obtener la carta Gantt');
-                }
-                const cartaGantt = await response.json();
+                const response = await fetch(`http://localhost:8080/api/operador/obtener-carta-gantt/${idCartaGantt}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-                // Rellenar el formulario con los datos de la carta Gantt
-                document.getElementById('idCartaGantt').value = cartaGantt.idCartaGantt;
+                if (!response.ok) {
+                    throw new Error('Error al cargar la carta Gantt');
+                }
+
+                const cartaGantt = await response.json();
                 document.getElementById('nombreCartaGantt').value = cartaGantt.nombreCartaGantt;
-                document.getElementById('fechaCreacion').value = new Date(cartaGantt.fechaCreacion).toISOString().slice(0, 16);
-                document.getElementById('actividadesPlanificadas').value = JSON.stringify(cartaGantt.actividadesPlanificadas, null, 2);
-                document.getElementById('cuadrillas').value = JSON.stringify(cartaGantt.cuadrillas, null, 2);
             } catch (error) {
                 console.error(error);
                 alert('No se pudo cargar la carta Gantt para editar.');
             }
         }
 
-        // Función para enviar los cambios al servidor
-        async function enviarCambios(event) {
-            event.preventDefault(); // Evitar que el formulario se envíe de manera tradicional
-            const idCartaGantt = document.getElementById('idCartaGantt').value;
-            const nombreCartaGantt = document.getElementById('nombreCartaGantt').value;
-            const fechaCreacion = document.getElementById('fechaCreacion').value;
-            const actividadesPlanificadas = JSON.parse(document.getElementById('actividadesPlanificadas').value);
-            const cuadrillas = JSON.parse(document.getElementById('cuadrillas').value);
-
-            const cartaGanttActualizada = {
-                actividadesPlanificadas,
-                cuadrillas,
-                fechaCreacion: new Date(fechaCreacion),
-                nombreCartaGantt
-            };
-
-            try {
-                const response = await fetch(`http://localhost:8080/api/sinAuth/editar-gantt/${idCartaGantt}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(cartaGanttActualizada)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error al editar la carta Gantt');
-                }
-
-                alert('Carta Gantt actualizada exitosamente.');
-                window.location.href = 'index.html'; // Redirigir a la lista después de guardar
-            } catch (error) {
-                console.error(error);
-                alert('No se pudo actualizar la carta Gantt.');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarDatosCartaGantt();
-            document.getElementById('editarGanttForm').addEventListener('submit', enviarCambios);
-        });
+        document.addEventListener('DOMContentLoaded', cargarCartaGantt);
     </script>
 
     <style>
@@ -119,7 +61,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            color: white; /* Color del texto */
+            color: white;
         }
 
         header {
@@ -134,14 +76,14 @@
 
         .content {
             padding: 20px;
-            color: #128055; /* Color secundario */
+            color: #128055;
         }
 
         .dulzon {
             max-height: 100px;
         }
     </style>
-
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
