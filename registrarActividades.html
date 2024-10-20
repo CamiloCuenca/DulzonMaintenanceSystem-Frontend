@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Actividades Mantenimiento - Dulzón S.A</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="images/icono.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <h1>Dulzón S.A</h1>
+        <img src="images/dulzon.png" alt="Dulzon" class="dulzon">
+        <h2>Registrar Actividades Mantenimiento</h2>
+    </header>
+    <div class="actividad-container">
+
+        <form class="form">
+            <div class="form-group2">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre">
+            </div>
+            <div class="form-group2">
+                <label for="maquina">Máquina:</label>
+                <select id="maquina" name="maquina">
+                    <option value="">Seleccionar Máquina</option>
+                    <!-- Agregar opciones aquí -->
+                </select>
+            </div>
+            <div class="form-group2">
+                <label for="fecha-inicial">Fecha Inicial Planificada:</label>
+                <input type="date" id="fecha-inicial" name="fecha-inicial">
+            </div>
+            <div class="form-group2">
+                <label for="hora-inicial">Hora Inicial Planificada:</label>
+                <input type="time" id="hora-inicial" name="hora-inicial">
+            </div>
+            <div class="form-group2">
+                <label for="fecha-final">Fecha Final Planificada:</label>
+                <input type="date" id="fecha-final" name="fecha-final">
+            </div>
+            <div class="form-group2">
+                <label for="hora-final">Hora Final Planificada:</label>
+                <input type="time" id="hora-final" name="hora-final">
+            </div>
+            <div class="form-group2-full">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion"></textarea>
+            </div>
+        </form>
+        <div class="agregar-container">
+            <button type="submit" class="btn-agregar">Agregar</button>
+        </div>
+    </div>
+    <button class="history-btn2">Regresar</button>
+</body>
+</html>
