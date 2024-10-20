@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Cartas Gantt - Dulzón S.A</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Dulzón S.A</h1>
+        <img src="images/dulzon.png" alt="Logo de Dulzón S.A" class="dulzon">
+    </header>
+
+    <div class="content">
+        <h2>Lista de Gantt</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID Carta Gantt</th>
+                    <th>Nombre</th>
+                    <th>Fecha de Creación</th>
+                    <th>Acciones</th> <!-- Nueva columna para acciones -->
+                </tr>
+            </thead>
+            <tbody id="mantenimientosTableBody">
+                <!-- Los datos de los mantenimientos se agregarán aquí dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function obtenerMantenimientos() {
+            try {
+                const response = await fetch('http://localhost:8080/api/sinAuth/obtener-lista-gantt');
+                if (!response.ok) {
+                    throw new Error('Error al obtener los mantenimientos');
+                }
+                const mantenimientos = await response.json();
+                const tableBody = document.getElementById('mantenimientosTableBody');
+                tableBody.innerHTML = ''; // Limpiar la tabla antes de agregar datos
+
+                mantenimientos.forEach(mantenimiento => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${mantenimiento.idCartaGantt}</td>
+                        <td>${mantenimiento.nombreCartaGantt}</td>
+                        <td>${new Date(mantenimiento.fechaCreacion).toLocaleString()}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editarMantenimiento('${mantenimiento.idCartaGantt}')">Editar</button>
+                            <button class="btn btn-danger" onclick="eliminarMantenimiento('${mantenimiento.idCartaGantt}')">Eliminar</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error(error);
+                alert('No se pudieron cargar los mantenimientos.');
+            }
+        }
+
+        function editarMantenimiento(idCartaGantt) {
+            // Redirigir a la página de edición
+            window.location.href = `editarCartaGantt.html?id=${idCartaGantt}`;
+        }
+
+        async function eliminarMantenimiento(idCartaGantt) {
+            // Lógica para eliminar el mantenimiento
+            alert(`Eliminar mantenimiento con ID: ${idCartaGantt}`);
+            // Implementar el fetch para eliminar cuando estés listo
+        }
+
+        document.addEventListener('DOMContentLoaded', obtenerMantenimientos);
+    </script>
+
+    <style>
+        body {
+            background-color: #1b1b1b;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 98vh;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            width: 97%;
+            background-color: #2a5246;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 129px;
+            color: white;
+        }
+
+        .content {
+            padding: 20px;
+            color: #128055;
+        }
+
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #2a5246;
+            color: white;
+        }
+
+        th {
+            background-color: #128055;
+        }
+
+        tr:nth-child(even) {
+            background-color: #2a5246;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #1b1b1b;
+        }
+
+        .dulzon {
+            max-height: 100px;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
