@@ -752,3 +752,52 @@ label {
 .voice-button2:hover {
     color: #128055;
 }
+
+
+
+
+
+.card {
+    width: 250px;
+    height: 150px;
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    font-size: 1.2rem; /* Aumentar el tamaño de la fuente */
+    border: none; /* Eliminar borde predeterminado */
+}
+
+.card:hover {
+    transform: scale(1.05); /* Ligeramente más pequeño */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Sombra al pasar el ratón */
+}
+
+.programar-mantenimiento {
+    background-color: #007bff; /* Color del navbar */
+    animation: pulse 1.5s infinite; /* Pulsar */
+}
+
+.registrar-actividades {
+    background-color: #28a745; /* Color del navbar */
+    animation: pulse 1.5s infinite 0.75s; /* Pulsar con retraso */
+}
+
+/* Animación pulsante */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+}
